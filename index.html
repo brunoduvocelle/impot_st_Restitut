@@ -336,88 +336,80 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     
                     <!-- Fiche A -->
-                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3">
                         <div class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Option A</div>
-                        <h4 class="font-bold text-slate-900">Micro-BIC Standard</h4>
+                        <h4 class="font-bold text-sm text-slate-900">Micro-BIC Standard</h4>
                         
-                        <ul class="text-xs space-y-2.5 text-slate-600 divide-y divide-slate-100">
-                            <li class="flex justify-between pt-0">
-                                <span class="text-slate-600">Abattement (30%)</span>
+                        <ul class="text-xs space-y-1.5 text-slate-600">
+                            <li class="flex justify-between">
+                                <span>Abattement (30%)</span>
                                 <output id="a-deduct" class="font-bold text-slate-900 tabular-nums">0 €</output>
                             </li>
-                            <li class="flex justify-between pt-2">
-                                <span class="text-slate-600">Base imposable</span>
+                            <li class="flex justify-between">
+                                <span>Base imposable</span>
                                 <output id="a-base" class="font-bold text-slate-900 tabular-nums">0 €</output>
                             </li>
-                            <li class="flex justify-between pt-2">
-                                <span class="text-slate-600">IR additionnel</span>
-                                <output id="a-ir" class="font-bold text-red-600 tabular-nums">0 €</output>
+                            <li class="flex justify-between pt-1 border-t border-slate-100">
+                                <span>Friction fiscale (IR+PS)</span>
+                                <output id="a-tax-total" class="font-bold text-red-600 tabular-nums">0 €</output>
                             </li>
-                            <li class="flex justify-between pt-2">
-                                <span class="text-slate-600">Prélèvements sociaux</span>
-                                <output id="a-ps" class="font-bold text-red-600 tabular-nums">0 €</output>
-                            </li>
-                            <li class="flex justify-between pt-2">
-                                <span class="font-semibold text-slate-900">Charges opérationnelles</span>
-                                <output id="a-costs" class="font-bold text-slate-900 tabular-nums">0 €</output>
+                            <li class="flex justify-between">
+                                <span>Salaire agent CESU</span>
+                                <output id="a-costs" class="font-bold text-slate-700 tabular-nums">0 €</output>
                             </li>
                         </ul>
                     </div>
 
                     <!-- Fiche B -->
-                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3">
                         <div class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Option B</div>
-                        <h4 class="font-bold text-slate-900">Régime Réel</h4>
+                        <h4 class="font-bold text-sm text-slate-900">Régime Réel</h4>
                         
-                        <ul class="text-xs space-y-2.5 text-slate-600 divide-y divide-slate-100">
-                            <li class="flex justify-between pt-0">
-                                <span class="text-slate-600">Charges déductibles</span>
+                        <ul class="text-xs space-y-1.5 text-slate-600">
+                            <li class="flex justify-between">
+                                <span>Charges déductibles</span>
                                 <output id="b-deduct" class="font-bold text-slate-900 tabular-nums">0 €</output>
                             </li>
-                            <li class="flex justify-between pt-2">
-                                <span class="text-slate-600">Dont amortissement</span>
-                                <output id="b-amort" class="font-bold text-slate-700 tabular-nums">0 €</output>
+                            <li class="flex justify-between text-[11px] text-slate-500">
+                                <span class="pl-2">dont amortissement</span>
+                                <output id="b-amort" class="font-semibold text-slate-700 tabular-nums">0 €</output>
                             </li>
-                            <li class="flex justify-between pt-2">
-                                <span class="text-slate-600">Base imposable</span>
+                            <li class="flex justify-between">
+                                <span>Base imposable</span>
                                 <output id="b-base" class="font-bold text-slate-900 tabular-nums">0 €</output>
                             </li>
-                            <li class="flex justify-between pt-2">
-                                <span class="text-slate-600">IR additionnel</span>
-                                <output id="b-ir" class="font-bold text-red-600 tabular-nums">0 €</output>
+                            <li class="flex justify-between pt-1 border-t border-slate-100">
+                                <span>Friction fiscale (IR+PS)</span>
+                                <output id="b-tax-total" class="font-bold text-red-600 tabular-nums">0 €</output>
                             </li>
-                            <li class="flex justify-between pt-2">
-                                <span class="font-semibold text-slate-900">Prélèvements sociaux</span>
-                                <output id="b-ps" class="font-bold text-red-600 tabular-nums">0 €</output>
+                            <li class="flex justify-between">
+                                <span>Frais comptabilité</span>
+                                <output id="b-accounting" class="font-bold text-slate-700 tabular-nums">0 €</output>
                             </li>
                         </ul>
                     </div>
 
                     <!-- Fiche C -->
-                    <div class="bg-gradient-to-br from-emerald-50 to-teal-50/30 rounded-2xl border border-emerald-200 shadow-sm p-5 space-y-4">
+                    <div class="bg-gradient-to-br from-emerald-50 to-teal-50/30 rounded-2xl border border-emerald-200 shadow-sm p-5 space-y-3">
                         <div class="text-xs font-bold text-emerald-700 uppercase tracking-wider">Option C</div>
-                        <h4 class="font-bold text-slate-900">Meublé Classé</h4>
+                        <h4 class="font-bold text-sm text-slate-900">Meublé Classé</h4>
                         
-                        <ul class="text-xs space-y-2.5 text-slate-600 divide-y divide-slate-100">
-                            <li class="flex justify-between pt-0">
-                                <span class="text-slate-600">Abattement (50%)</span>
+                        <ul class="text-xs space-y-1.5 text-slate-600">
+                            <li class="flex justify-between">
+                                <span>Abattement (50%)</span>
                                 <output id="c-deduct" class="font-bold text-emerald-700 tabular-nums">0 €</output>
                             </li>
-                            <li class="flex justify-between pt-2">
-                                <span class="text-slate-600">Base imposable</span>
+                            <li class="flex justify-between">
+                                <span>Base imposable</span>
                                 <output id="c-base" class="font-bold text-slate-900 tabular-nums">0 €</output>
                             </li>
-                            <li class="flex justify-between pt-2">
-                                <span class="text-slate-600">IR additionnel</span>
-                                <output id="c-ir" class="font-bold text-red-600 tabular-nums">0 €</output>
+                            <li class="flex justify-between pt-1 border-t border-slate-100">
+                                <span>Friction fiscale (IR+PS)</span>
+                                <output id="c-tax-total" class="font-bold text-red-600 tabular-nums">0 €</output>
                             </li>
-                            <li class="flex justify-between pt-2">
-                                <span class="text-slate-600">Prélèvements sociaux</span>
-                                <output id="c-ps" class="font-bold text-red-600 tabular-nums">0 €</output>
-                            </li>
-                            <li class="flex justify-between pt-2">
-                                <span class="font-semibold text-slate-900">Frais classement</span>
-                                <output id="c-costs" class="font-bold text-slate-900 tabular-nums">0 €</output>
+                            <li class="flex justify-between">
+                                <span>Salaire agent CESU</span>
+                                <output id="c-costs" class="font-bold text-slate-700 tabular-nums">0 €</output>
                             </li>
                         </ul>
                     </div>
@@ -572,8 +564,7 @@
             document.getElementById('a-invalid-alert').classList.toggle('hidden', isOptionAValid);
             document.getElementById('a-deduct').textContent = fmt(deductionA);
             document.getElementById('a-base').textContent = fmt(baseTaxableA);
-            document.getElementById('a-ir').textContent = fmt(irA);
-            document.getElementById('a-ps').textContent = fmt(psA);
+            document.getElementById('a-tax-total').textContent = fmt(irA + psA);
             document.getElementById('a-costs').textContent = fmt(salaryAgentGross);
             document.getElementById('a-pocket-amount').textContent = isOptionAValid ? fmt(pocketA) : 'Inaccessible';
             document.getElementById('a-tmi').textContent = `TMI : ${getTMI(netSalary + baseTaxableA, parts)}`;
@@ -582,17 +573,16 @@
             document.getElementById('b-deduct').textContent = fmt(totalDeductionsB);
             document.getElementById('b-amort').textContent = fmt(amortissement);
             document.getElementById('b-base').textContent = fmt(baseTaxableB);
-            document.getElementById('b-ir').textContent = fmt(irB);
-            document.getElementById('b-ps').textContent = fmt(psB);
+            document.getElementById('b-tax-total').textContent = fmt(irB + psB);
+            document.getElementById('b-accounting').textContent = fmt(accounting);
             document.getElementById('b-pocket-amount').textContent = fmt(pocketB);
             document.getElementById('b-tmi').textContent = `TMI : ${getTMI(netSalary + baseTaxableB, parts)}`;
 
             // Option C
             document.getElementById('c-deduct').textContent = fmt(deductionC);
             document.getElementById('c-base').textContent = fmt(baseTaxableC);
-            document.getElementById('c-ir').textContent = fmt(irC);
-            document.getElementById('c-ps').textContent = fmt(psC);
-            document.getElementById('c-costs').textContent = fmt(costC);
+            document.getElementById('c-tax-total').textContent = fmt(irC + psC);
+            document.getElementById('c-costs').textContent = fmt(salaryAgentGross);
             document.getElementById('c-pocket-amount').textContent = fmt(pocketC);
             document.getElementById('c-tmi').textContent = `TMI : ${getTMI(netSalary + baseTaxableC, parts)}`;
 
