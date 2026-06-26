@@ -4,312 +4,457 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulateur Cumul LMNP, Salaire & Conciergerie</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        * { font-family: 'Inter', sans-serif; }
+        
+        /* Palette cohérente */
+        :root {
+            --color-primary: #4f46e5;
+            --color-primary-dark: #4338ca;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+            --color-neutral-light: #f8fafc;
+            --color-neutral-dark: #1e293b;
+        }
+
+        /* Range inputs stylisés */
+        input[type="range"] {
+            accent-color: var(--color-primary);
+        }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            appearance: none;
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #4f46e5;
+            background: var(--color-primary);
             cursor: pointer;
-            transition: background .15s ease-in-out;
-            box-shadow: 0 0 10px rgba(79, 70, 229, 0.4);
+            box-shadow: 0 0 12px rgba(79, 70, 229, 0.3);
+            transition: all 0.2s ease;
         }
-        input[type="range"]::-webkit-slider-thumb:hover { background: #4338ca; }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: var(--color-primary-dark);
+            box-shadow: 0 0 16px rgba(79, 70, 229, 0.5);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 12px rgba(79, 70, 229, 0.3);
+            transition: all 0.2s ease;
+        }
+        input[type="range"]::-moz-range-thumb:hover {
+            background: var(--color-primary-dark);
+        }
+
+        /* Animations subtiles */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        /* Barres de résultats fluides */
+        .bar-segment {
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Grille responsive pour mobile */
+        @media (max-width: 768px) {
+            .grid-layout { 
+                grid-template-columns: 1fr !important;
+            }
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen">
+<body class="bg-gradient-to-br from-slate-50 via-blue-50/20 to-slate-100 text-slate-800 min-h-screen">
 
-    <!-- Header principal -->
-    <header class="bg-white border-b border-slate-200 py-6 px-4 sticky top-0 z-50 shadow-sm backdrop-blur-md bg-white/95">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <div class="p-2.5 bg-indigo-600 text-white rounded-xl shadow-md">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-5">
+            <div class="flex items-center gap-4">
+                <div class="p-2.5 bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-xl shadow-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
                 </div>
-                <div>
-                    <h1 class="text-xl font-bold text-slate-900 tracking-tight">Optimisateur LMNP Intel-IR</h1>
-                    <p class="text-xs text-slate-500">Simulateur d'impact fiscal avec intégration du barème progressif de l'impôt sur le revenu</p>
+                <div class="flex-1">
+                    <h1 class="text-lg font-bold text-slate-900 tracking-tight">Optimisateur LMNP</h1>
+                    <p class="text-xs text-slate-500">Simulateur avec progressivité fiscale & amortissement LMNP</p>
                 </div>
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span class="w-2 h-2 mr-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Législation Exercice 2026
-                </span>
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/50">
+                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                    Exercice 2026
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Container -->
+    <!-- Main -->
     <main class="max-w-7xl mx-auto px-4 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="grid grid-layout grid-cols-1 lg:grid-cols-5 gap-8">
             
-            <!-- CONTROLES ET PARAMETRES -->
-            <section class="lg:col-span-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-                <h2 class="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                    Situation Fiscale & Pro
-                </h2>
+            <!-- PANNEAU DE CONTRÔLE (30% width) -->
+            <section class="lg:col-span-2">
+                <div class="space-y-6">
+                    
+                    <!-- Bloc Profil -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5">
+                        <div class="flex items-center gap-2 pb-3 border-b border-slate-100">
+                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            <h2 class="font-bold text-slate-900">Profil Fiscal</h2>
+                        </div>
 
-                <!-- Salaire Net Imposable -->
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center">
-                        <label for="salary-gross" class="text-sm font-semibold text-slate-700">Salaire Net Imposable annuel</label>
-                        <span id="salary-gross-val" class="text-base font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg">35 000 €</span>
-                    </div>
-                    <input type="range" id="salary-gross" min="0" max="120000" step="1000" value="35000" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
-                </div>
+                        <!-- Salaire -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-baseline">
+                                <label class="text-sm font-semibold text-slate-700">Salaire net imposable</label>
+                                <output id="salary-display" class="text-base font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg tabular-nums">35 000 €</output>
+                            </div>
+                            <input type="range" id="salary-input" min="0" max="120000" step="1000" value="35000" 
+                                class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer">
+                            <div class="flex justify-between text-xs text-slate-400">
+                                <span>0 €</span>
+                                <span>120 000 €</span>
+                            </div>
+                        </div>
 
-                <!-- Nombre de parts -->
-                <div class="space-y-2">
-                    <label for="tax-parts" class="text-sm font-semibold text-slate-700">Nombre de parts du foyer</label>
-                    <select id="tax-parts" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="1" selected>1 part (Célibataire)</option>
-                        <option value="1.5">1.5 parts</option>
-                        <option value="2">2 parts (Couple marié/pacsé)</option>
-                        <option value="2.5">2.5 parts</option>
-                        <option value="3">3 parts</option>
-                        <option value="4">4 parts</option>
-                    </select>
-                </div>
-
-                <div class="border-t border-slate-100 my-4"></div>
-
-                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider text-slate-400">Activité Saisonnière Été</h2>
-
-                <!-- Revenus Airbnb -->
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center">
-                        <label for="rev-gross" class="text-sm font-semibold text-slate-700">Recettes Airbnb brutes</label>
-                        <span id="rev-gross-val" class="text-base font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg">6 000 €</span>
-                    </div>
-                    <input type="range" id="rev-gross" min="1000" max="25000" step="500" value="6000" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
-                    <div class="flex justify-between text-[11px] text-slate-400">
-                        <span>Seuil Micro-BIC : 15 000 €</span>
-                        <span>Max simulé : 25 000 €</span>
-                    </div>
-                </div>
-
-                <!-- Heures travaillées -->
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center">
-                        <label for="agent-hours" class="text-sm font-semibold text-slate-700">Heures de l'agent (CESU)</label>
-                        <span id="agent-hours-val" class="text-base font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded-lg">50 heures</span>
-                    </div>
-                    <input type="range" id="agent-hours" min="10" max="150" step="5" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-600">
-                </div>
-
-                <!-- Salaire net de l'agent -->
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center">
-                        <label for="agent-wage" class="text-sm font-semibold text-slate-700">Salaire horaire net</label>
-                        <span id="agent-wage-val" class="text-base font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded-lg">12.00 €/h</span>
-                    </div>
-                    <input type="range" id="agent-wage" min="11" max="25" step="0.5" value="12" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-600">
-                </div>
-
-                <div class="border-t border-slate-100 my-4"></div>
-
-                <!-- Ajustements techniques -->
-                <div class="space-y-3">
-                    <h3 class="text-xs font-semibold uppercase text-slate-400 tracking-wider">Charges Option B (Réel)</h3>
-                    <div>
-                        <label for="other-expenses" class="block text-xs font-medium text-slate-600 mb-1">Autres charges réelles d'été</label>
-                        <div class="relative">
-                            <input type="number" id="other-expenses" value="400" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-8 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <span class="absolute right-3 top-2 text-xs text-slate-400">€</span>
+                        <!-- Quotient familial -->
+                        <div class="space-y-2">
+                            <label for="parts-select" class="text-sm font-semibold text-slate-700">Nombre de parts fiscales</label>
+                            <select id="parts-select" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <option value="1" selected>1 part (célibataire)</option>
+                                <option value="1.5">1,5 parts</option>
+                                <option value="2">2 parts (couple)</option>
+                                <option value="2.5">2,5 parts</option>
+                                <option value="3">3 parts</option>
+                                <option value="4">4 parts</option>
+                            </select>
                         </div>
                     </div>
-                    <div>
-                        <label for="accounting-cost" class="block text-xs font-medium text-slate-600 mb-1">Frais comptables annuels</label>
-                        <div class="relative">
-                            <input type="number" id="accounting-cost" value="250" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-8 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <span class="absolute right-3 top-2 text-xs text-slate-400">€</span>
+
+                    <!-- Bloc Activité LMNP -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5">
+                        <div class="flex items-center gap-2 pb-3 border-b border-slate-100">
+                            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 001 1h12a1 1 0 001-1V9m-9 11l4-4m-9-8l4 4m0 0l4-4"/>
+                            </svg>
+                            <h2 class="font-bold text-slate-900">Activité Saisonnière</h2>
+                        </div>
+
+                        <!-- Recettes Airbnb -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-baseline">
+                                <label class="text-sm font-semibold text-slate-700">Recettes Airbnb brutes</label>
+                                <output id="revenue-display" class="text-base font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg tabular-nums">6 000 €</output>
+                            </div>
+                            <input type="range" id="revenue-input" min="1000" max="25000" step="500" value="6000" 
+                                class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer">
+                            <div class="flex justify-between text-xs text-slate-400 px-0.5">
+                                <span>Seuil Micro : 15 k€</span>
+                                <span>Max : 25 k€</span>
+                            </div>
+                        </div>
+
+                        <!-- Heures agent -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-baseline">
+                                <label class="text-sm font-semibold text-slate-700">Heures conciergerie (CESU)</label>
+                                <output id="hours-display" class="text-base font-bold text-teal-600 bg-teal-50 px-2.5 py-1 rounded-lg tabular-nums">50 h</output>
+                            </div>
+                            <input type="range" id="hours-input" min="10" max="150" step="5" value="50" 
+                                class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer">
+                        </div>
+
+                        <!-- Salaire horaire -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-baseline">
+                                <label class="text-sm font-semibold text-slate-700">Salaire horaire net</label>
+                                <output id="wage-display" class="text-base font-bold text-teal-600 bg-teal-50 px-2.5 py-1 rounded-lg tabular-nums">12,00 €/h</output>
+                            </div>
+                            <input type="range" id="wage-input" min="11" max="25" step="0.5" value="12" 
+                                class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer">
                         </div>
                     </div>
+
+                    <!-- Bloc Charges Réel -->
+                    <div class="bg-gradient-to-br from-slate-50 to-blue-50/30 rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+                        <h3 class="text-xs font-bold uppercase text-slate-600 tracking-wider">Charges Option B (Régime Réel)</h3>
+                        
+                        <div>
+                            <label for="expenses-input" class="text-xs font-semibold text-slate-600 block mb-1.5">Autres charges d'été</label>
+                            <div class="relative">
+                                <input type="number" id="expenses-input" value="400" min="0" 
+                                    class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <span class="absolute right-3 top-2.5 text-sm text-slate-400 font-medium">€</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="accounting-input" class="text-xs font-semibold text-slate-600 block mb-1.5">Frais de comptabilité</label>
+                            <div class="relative">
+                                <input type="number" id="accounting-input" value="250" min="0" 
+                                    class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <span class="absolute right-3 top-2.5 text-sm text-slate-400 font-medium">€</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="amortissement-input" class="text-xs font-semibold text-slate-600 block mb-1.5">Amortissement annuel bien + mobilier</label>
+                            <div class="relative">
+                                <input type="number" id="amortissement-input" value="3500" min="0" 
+                                    class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <span class="absolute right-3 top-2.5 text-sm text-slate-400 font-medium">€</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">💡 Amortissement du bien immobilier et mobilier : élément clé du régime réel qui réduit l'assiette imposable.</p>
+                        </div>
+                    </div>
+
                 </div>
             </section>
 
-            <!-- SECTION RESULTATS & DIAGRAMMES -->
-            <section class="lg:col-span-8 space-y-6">
+            <!-- ZONE RÉSULTATS (70% width) -->
+            <section class="lg:col-span-3 space-y-6">
                 
-                <!-- VERDICT FISCAL GLOBAL -->
-                <div class="bg-gradient-to-br from-slate-900 to-indigo-950 text-white p-6 rounded-2xl shadow-xl relative overflow-hidden">
-                    <div class="relative z-10 space-y-3">
-                        <div class="text-indigo-400 font-bold text-xs uppercase tracking-widest flex items-center gap-2">
+                <!-- VERDICT PRINCIPAL -->
+                <div class="bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 text-white rounded-2xl p-6 shadow-2xl overflow-hidden relative">
+                    <div class="absolute top-0 right-0 w-40 h-40 bg-indigo-500/10 rounded-full -mr-20 -mt-20"></div>
+                    <div class="relative z-10 space-y-4">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
                             <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                            Arbitrage sur gain net d'activité
+                            <span class="text-xs font-semibold text-slate-300 uppercase tracking-widest">Arbitrage optimal</span>
                         </div>
-                        <h2 class="text-2xl font-extrabold tracking-tight">Le Verdict Fiscale</h2>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                            <div class="bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/10">
-                                <span class="text-[10px] text-slate-400 uppercase font-semibold block">Option Maximisant votre Reste en Poche :</span>
-                                <div id="winner-title" class="font-extrabold text-base text-amber-400 mt-1">-</div>
+                        <div>
+                            <p id="winner-label" class="text-sm text-slate-400 uppercase tracking-wider font-medium mb-2">Option gagnante</p>
+                            <h2 id="winner-title" class="text-2xl md:text-3xl font-bold tracking-tight">—</h2>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 pt-2">
+                            <div class="bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-white/10">
+                                <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-2">Reste net annuel</p>
+                                <p id="winner-amount" class="text-2xl font-extrabold text-emerald-400">0 €</p>
                             </div>
-                            <div class="bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/10">
-                                <span class="text-[10px] text-slate-400 uppercase font-semibold block">En poche net (Seulement via Airbnb) :</span>
-                                <div id="winner-pocket" class="font-extrabold text-2xl text-emerald-400 mt-1">0,00 €</div>
+                            <div class="bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-white/10">
+                                <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-2">TMI active</p>
+                                <p id="winner-tmi" class="text-2xl font-extrabold text-blue-400">—</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- GRAPH COMPA FINANCIER LISIBLE -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-                    <div class="border-b border-slate-100 pb-3">
-                        <h3 class="text-base font-bold text-slate-900">Performance Financière de l'Activité Airbnb</h3>
-                        <p class="text-xs text-slate-500 mt-0.5">Ce graphique isole la somme d'argent exacte qu'il vous reste après prélèvement de la part d'impôt progressif et des charges associées.</p>
+                <!-- GRAPHIQUE COMPARATIF -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+                    <div class="border-b border-slate-100 pb-4">
+                        <h3 class="text-base font-bold text-slate-900 mb-1">Comparaison des 3 régimes fiscaux</h3>
+                        <p class="text-sm text-slate-500">Répartition des recettes brutes : argent en poche vs friction fiscale & opérationnelle</p>
                     </div>
-                    
-                    <!-- Barre Option A -->
-                    <div class="space-y-1.5">
-                        <div class="flex justify-between items-end text-xs">
-                            <div>
-                                <span class="font-bold text-slate-800 block">Option A : Micro-BIC Classique</span>
-                                <span id="tmi-a-indicator" class="text-[10px] text-slate-400">TMI induite : -</span>
+
+                    <!-- Option A -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-900 text-sm">Option A : Micro-BIC (30%)</p>
+                                <p class="text-xs text-slate-500 mt-0.5">Abattement forfaitaire 30 % • <span id="a-tmi" class="font-semibold text-slate-700">TMI : —</span></p>
                             </div>
-                            <span id="pocket-a-txt" class="font-extrabold text-slate-900 text-sm">-</span>
+                            <output id="a-pocket-amount" class="font-bold text-indigo-600 text-lg tabular-nums">0 €</output>
                         </div>
-                        <div id="container-bar-a" class="w-full bg-slate-100 h-9 rounded-xl overflow-hidden flex relative border border-slate-200/60 shadow-inner">
-                            <div id="pocket-a-bar" class="bg-indigo-600 h-full transition-all duration-500 relative flex items-center pl-3 text-[10px] text-white font-bold tracking-wide"></div>
-                            <div id="tax-a-bar" class="bg-red-400 h-full transition-all duration-500"></div>
-                            <div id="cost-a-bar" class="bg-slate-300 h-full transition-all duration-500"></div>
+                        <div id="a-invalid-alert" class="hidden text-xs font-semibold text-red-600 bg-red-50 p-2 rounded-lg border border-red-200">
+                            ⚠️ Recettes > 15 000 € : Option inaccessible. Passage obligatoire au Régime Réel.
+                        </div>
+                        <div class="w-full h-10 bg-slate-100 rounded-xl overflow-hidden flex border border-slate-200/60 shadow-inner relative" style="height: 28px;">
+                            <div id="a-pocket-bar" class="bar-segment bg-indigo-600 flex items-center pl-3 text-xs text-white font-semibold"></div>
+                            <div id="a-tax-bar" class="bar-segment bg-red-400"></div>
+                            <div id="a-cost-bar" class="bar-segment bg-slate-300"></div>
                         </div>
                     </div>
 
-                    <!-- Barre Option B -->
-                    <div class="space-y-1.5">
-                        <div class="flex justify-between items-end text-xs">
-                            <div>
-                                <span class="font-bold text-slate-800 block">Option B : Régime Réel Intégral</span>
-                                <span id="tmi-b-indicator" class="text-[10px] text-slate-400">TMI induite : -</span>
+                    <!-- Option B -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-900 text-sm">Option B : Régime Réel</p>
+                                <p class="text-xs text-slate-500 mt-0.5">Déduction charges réelles + amortissement • <span id="b-tmi" class="font-semibold text-slate-700">TMI : —</span></p>
                             </div>
-                            <span id="pocket-b-txt" class="font-extrabold text-slate-900 text-sm">-</span>
+                            <output id="b-pocket-amount" class="font-bold text-indigo-600 text-lg tabular-nums">0 €</output>
                         </div>
-                        <div class="w-full bg-slate-100 h-9 rounded-xl overflow-hidden flex relative border border-slate-200/60 shadow-inner">
-                            <div id="pocket-b-bar" class="bg-indigo-600 h-full transition-all duration-500 relative flex items-center pl-3 text-[10px] text-white font-bold tracking-wide"></div>
-                            <div id="tax-b-bar" class="bg-red-400 h-full transition-all duration-500"></div>
-                            <div id="cost-b-bar" class="bg-slate-300 h-full transition-all duration-500"></div>
+                        <div class="w-full h-10 bg-slate-100 rounded-xl overflow-hidden flex border border-slate-200/60 shadow-inner relative" style="height: 28px;">
+                            <div id="b-pocket-bar" class="bar-segment bg-indigo-600 flex items-center pl-3 text-xs text-white font-semibold"></div>
+                            <div id="b-tax-bar" class="bar-segment bg-red-400"></div>
+                            <div id="b-cost-bar" class="bar-segment bg-slate-300"></div>
                         </div>
                     </div>
 
-                    <!-- Barre Option C -->
-                    <div class="space-y-1.5">
-                        <div class="flex justify-between items-end text-xs">
-                            <div>
-                                <span class="font-bold text-slate-800 flex items-center gap-1.5">
-                                    Option C : Meublé Classé de Tourisme 
-                                    <span class="bg-emerald-100 text-emerald-800 text-[9px] px-1.5 py-0.5 rounded font-extrabold tracking-wide">Abattement 50%</span>
-                                </span>
-                                <span id="tmi-c-indicator" class="text-[10px] text-slate-400">TMI induite : -</span>
+                    <!-- Option C -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <div class="flex-1">
+                                <p class="font-bold text-slate-900 text-sm">Option C : Meublé Classé (50%)</p>
+                                <p class="text-xs text-slate-500 mt-0.5">Abattement forfaitaire 50 % • <span id="c-tmi" class="font-semibold text-slate-700">TMI : —</span></p>
                             </div>
-                            <span id="pocket-c-txt" class="font-extrabold text-emerald-600 text-sm">-</span>
+                            <output id="c-pocket-amount" class="font-bold text-emerald-600 text-lg tabular-nums">0 €</output>
                         </div>
-                        <div class="w-full bg-slate-100 h-9 rounded-xl overflow-hidden flex relative border border-slate-200/60 shadow-inner">
-                            <div id="pocket-c-bar" class="bg-emerald-500 h-full transition-all duration-500 relative flex items-center pl-3 text-[10px] text-white font-bold tracking-wide"></div>
-                            <div id="tax-c-bar" class="bg-red-400 h-full transition-all duration-500"></div>
-                            <div id="cost-c-bar" class="bg-slate-300 h-full transition-all duration-500"></div>
+                        <div class="w-full h-10 bg-slate-100 rounded-xl overflow-hidden flex border border-slate-200/60 shadow-inner relative" style="height: 28px;">
+                            <div id="c-pocket-bar" class="bar-segment bg-emerald-500 flex items-center pl-3 text-xs text-white font-semibold"></div>
+                            <div id="c-tax-bar" class="bar-segment bg-red-400"></div>
+                            <div id="c-cost-bar" class="bar-segment bg-slate-300"></div>
                         </div>
                     </div>
 
-                    <!-- Légende explicative -->
-                    <div class="flex flex-wrap gap-x-6 gap-y-2 pt-3 text-[11px] justify-center text-slate-500 border-t border-slate-100">
+                    <!-- Légende -->
+                    <div class="flex flex-wrap gap-3 pt-4 text-xs text-slate-600 border-t border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="w-3 h-3 bg-emerald-500 rounded-sm"></span>
-                            <span>Reste net en poche (Classé)</span>
+                            <span>Net en poche (Classé)</span>
                         </div>
                         <div class="flex items-center gap-1.5">
                             <span class="w-3 h-3 bg-indigo-600 rounded-sm"></span>
-                            <span>Reste net en poche (Standard / Réel)</span>
+                            <span>Net en poche</span>
                         </div>
                         <div class="flex items-center gap-1.5">
                             <span class="w-3 h-3 bg-red-400 rounded-sm"></span>
-                            <span>Impôt sur le Revenu + PS (17.2%) induits</span>
+                            <span>IR + PS (17,2%)</span>
                         </div>
                         <div class="flex items-center gap-1.5">
                             <span class="w-3 h-3 bg-slate-300 rounded-sm"></span>
-                            <span>Frais professionnels, Agent &amp; Gestion</span>
+                            <span>Charges & frais</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- DETAILED DATA CARDS -->
+                <!-- FICHES DÉTAILS -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     
                     <!-- Fiche A -->
-                    <div id="card-a" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Détails Option A</div>
-                        <h4 class="font-bold text-slate-900 text-xs">Micro-BIC classique</h4>
-                        <div id="alert-threshold-a" class="hidden text-[10px] font-bold text-red-600 bg-red-50 p-2 rounded-lg border border-red-200">
-                            Exclu de plein droit : Recettes supérieures à 15 000 €. Passage obligatoire au Réel.
-                        </div>
-                        <ul id="list-details-a" class="text-xs space-y-2 text-slate-600">
-                            <li class="flex justify-between"><span>Abattement (30%) :</span><strong id="det-abatt-a" class="text-slate-800">-</strong></li>
-                            <li class="flex justify-between"><span>IR additionnel :</span><strong id="det-ir-a" class="text-red-500">-</strong></li>
-                            <li class="flex justify-between"><span>Prélèvements Sociaux :</span><strong id="det-ps-a" class="text-red-500">-</strong></li>
-                            <li class="flex justify-between"><span>Charges Agent :</span><strong id="det-cost-a" class="text-slate-800">-</strong></li>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
+                        <div class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Option A</div>
+                        <h4 class="font-bold text-slate-900">Micro-BIC Standard</h4>
+                        
+                        <ul class="text-xs space-y-2.5 text-slate-600 divide-y divide-slate-100">
+                            <li class="flex justify-between pt-0">
+                                <span class="text-slate-600">Abattement (30%)</span>
+                                <output id="a-deduct" class="font-bold text-slate-900 tabular-nums">0 €</output>
+                            </li>
+                            <li class="flex justify-between pt-2">
+                                <span class="text-slate-600">Base imposable</span>
+                                <output id="a-base" class="font-bold text-slate-900 tabular-nums">0 €</output>
+                            </li>
+                            <li class="flex justify-between pt-2">
+                                <span class="text-slate-600">IR additionnel</span>
+                                <output id="a-ir" class="font-bold text-red-600 tabular-nums">0 €</output>
+                            </li>
+                            <li class="flex justify-between pt-2">
+                                <span class="text-slate-600">Prélèvements sociaux</span>
+                                <output id="a-ps" class="font-bold text-red-600 tabular-nums">0 €</output>
+                            </li>
+                            <li class="flex justify-between pt-2">
+                                <span class="font-semibold text-slate-900">Charges opérationnelles</span>
+                                <output id="a-costs" class="font-bold text-slate-900 tabular-nums">0 €</output>
+                            </li>
                         </ul>
                     </div>
 
                     <!-- Fiche B -->
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Détails Option B</div>
-                        <h4 class="font-bold text-slate-900 text-xs">Régime Réel</h4>
-                        <ul class="text-xs space-y-2 text-slate-600">
-                            <li class="flex justify-between"><span>Base imposable :</span><strong id="det-taxbase-b" class="text-slate-800">-</strong></li>
-                            <li class="flex justify-between"><span>IR additionnel :</span><strong id="det-ir-b" class="text-red-500">-</strong></li>
-                            <li class="flex justify-between"><span>Prélèvements Sociaux :</span><strong id="det-ps-b" class="text-red-500">-</strong></li>
-                            <li class="flex justify-between"><span>Frais &amp; Comptabilité :</span><strong id="det-cost-b" class="text-slate-800">-</strong></li>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
+                        <div class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Option B</div>
+                        <h4 class="font-bold text-slate-900">Régime Réel</h4>
+                        
+                        <ul class="text-xs space-y-2.5 text-slate-600 divide-y divide-slate-100">
+                            <li class="flex justify-between pt-0">
+                                <span class="text-slate-600">Charges déductibles</span>
+                                <output id="b-deduct" class="font-bold text-slate-900 tabular-nums">0 €</output>
+                            </li>
+                            <li class="flex justify-between pt-2">
+                                <span class="text-slate-600">Dont amortissement</span>
+                                <output id="b-amort" class="font-bold text-slate-700 tabular-nums">0 €</output>
+                            </li>
+                            <li class="flex justify-between pt-2">
+                                <span class="text-slate-600">Base imposable</span>
+                                <output id="b-base" class="font-bold text-slate-900 tabular-nums">0 €</output>
+                            </li>
+                            <li class="flex justify-between pt-2">
+                                <span class="text-slate-600">IR additionnel</span>
+                                <output id="b-ir" class="font-bold text-red-600 tabular-nums">0 €</output>
+                            </li>
+                            <li class="flex justify-between pt-2">
+                                <span class="font-semibold text-slate-900">Prélèvements sociaux</span>
+                                <output id="b-ps" class="font-bold text-red-600 tabular-nums">0 €</output>
+                            </li>
                         </ul>
                     </div>
 
                     <!-- Fiche C -->
-                    <div class="bg-white p-5 rounded-2xl border border-emerald-200 bg-emerald-50/10 shadow-sm space-y-4">
-                        <div class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Détails Option C</div>
-                        <h4 class="font-bold text-slate-900 text-xs">Meublé de Tourisme Classé</h4>
-                        <ul class="text-xs space-y-2 text-slate-600">
-                            <li class="flex justify-between"><span>Abattement (50%) :</span><strong id="det-abatt-c" class="text-emerald-700">-</strong></li>
-                            <li class="flex justify-between"><span>IR additionnel :</span><strong id="det-ir-c" class="text-red-500">-</strong></li>
-                            <li class="flex justify-between"><span>Prélèvements Sociaux :</span><strong id="det-ps-c" class="text-red-500">-</strong></li>
-                            <li class="flex justify-between"><span>Frais &amp; Classement :</span><strong id="det-cost-c" class="text-slate-800">-</strong></li>
+                    <div class="bg-gradient-to-br from-emerald-50 to-teal-50/30 rounded-2xl border border-emerald-200 shadow-sm p-5 space-y-4">
+                        <div class="text-xs font-bold text-emerald-700 uppercase tracking-wider">Option C</div>
+                        <h4 class="font-bold text-slate-900">Meublé Classé</h4>
+                        
+                        <ul class="text-xs space-y-2.5 text-slate-600 divide-y divide-slate-100">
+                            <li class="flex justify-between pt-0">
+                                <span class="text-slate-600">Abattement (50%)</span>
+                                <output id="c-deduct" class="font-bold text-emerald-700 tabular-nums">0 €</output>
+                            </li>
+                            <li class="flex justify-between pt-2">
+                                <span class="text-slate-600">Base imposable</span>
+                                <output id="c-base" class="font-bold text-slate-900 tabular-nums">0 €</output>
+                            </li>
+                            <li class="flex justify-between pt-2">
+                                <span class="text-slate-600">IR additionnel</span>
+                                <output id="c-ir" class="font-bold text-red-600 tabular-nums">0 €</output>
+                            </li>
+                            <li class="flex justify-between pt-2">
+                                <span class="text-slate-600">Prélèvements sociaux</span>
+                                <output id="c-ps" class="font-bold text-red-600 tabular-nums">0 €</output>
+                            </li>
+                            <li class="flex justify-between pt-2">
+                                <span class="font-semibold text-slate-900">Frais classement</span>
+                                <output id="c-costs" class="font-bold text-slate-900 tabular-nums">0 €</output>
+                            </li>
                         </ul>
                     </div>
 
                 </div>
 
             </section>
+
         </div>
     </main>
 
-    <!-- Logique de calcul fiscal révisée -->
+    <!-- Moteur de calcul -->
     <script>
-        const salaryGrossInput = document.getElementById('salary-gross');
-        const salaryGrossVal = document.getElementById('salary-gross-val');
-        const taxPartsSelect = document.getElementById('tax-parts');
-        
-        const revGrossInput = document.getElementById('rev-gross');
-        const revGrossVal = document.getElementById('rev-gross-val');
-        const agentHoursInput = document.getElementById('agent-hours');
-        const agentHoursVal = document.getElementById('agent-hours-val');
-        const agentWageInput = document.getElementById('agent-wage');
-        const agentWageVal = document.getElementById('agent-wage-val');
-        const otherExpensesInput = document.getElementById('other-expenses');
-        const accountingCostInput = document.getElementById('accounting-cost');
-
-        const fmtCurr = (num) => {
-            return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(num);
+        // Elements DOM
+        const inputs = {
+            salary: document.getElementById('salary-input'),
+            parts: document.getElementById('parts-select'),
+            revenue: document.getElementById('revenue-input'),
+            hours: document.getElementById('hours-input'),
+            wage: document.getElementById('wage-input'),
+            expenses: document.getElementById('expenses-input'),
+            accounting: document.getElementById('accounting-input'),
+            amortissement: document.getElementById('amortissement-input')
         };
 
-        // Barème Impôt sur le Revenu Progressif 2026
+        const displays = {
+            salary: document.getElementById('salary-display'),
+            revenue: document.getElementById('revenue-display'),
+            hours: document.getElementById('hours-display'),
+            wage: document.getElementById('wage-display')
+        };
+
+        // Formatage devise
+        const fmt = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
+        const fmtDec = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 }).format(n);
+
+        // Barème IR progressif 2026
         function calculateIR(income, parts) {
             const qf = income / parts;
             let taxPerPart = 0;
@@ -319,10 +464,10 @@
             if (qf > 28797) taxPerPart += (Math.min(qf, 82341) - 28797) * 0.30;
             if (qf > 11294) taxPerPart += (Math.min(qf, 28797) - 11294) * 0.11;
 
-            return taxPerPart * parts;
+            return Math.max(0, taxPerPart * parts);
         }
 
-        // Détection de la TMI théorique supérieure atteinte
+        // TMI active
         function getTMI(income, parts) {
             const qf = income / parts;
             if (qf > 177106) return "45 %";
@@ -332,159 +477,157 @@
             return "0 %";
         }
 
+        // Abattement forfaitaire salaire (10% plafonné)
+        function getSalaryDeduction(salary) {
+            let ded = salary * 0.10;
+            if (ded > 14161) ded = 14161;
+            if (ded < 495 && salary > 495) ded = 495;
+            return ded;
+        }
+
         function performCalculations() {
-            const salary = parseFloat(salaryGrossInput.value);
-            const parts = parseFloat(taxPartsSelect.value);
-            const revenue = parseFloat(revGrossInput.value);
-            const hours = parseInt(agentHoursInput.value);
-            const wageNet = parseFloat(agentWageInput.value);
-            const otherExpenses = parseFloat(otherExpensesInput.value) || 0;
-            const accountingCost = parseFloat(accountingCostInput.value) || 0;
+            const salary = parseFloat(inputs.salary.value);
+            const parts = parseFloat(inputs.parts.value);
+            const revenue = parseFloat(inputs.revenue.value);
+            const hours = parseInt(inputs.hours.value);
+            const wage = parseFloat(inputs.wage.value);
+            const expenses = parseFloat(inputs.expenses.value) || 0;
+            const accounting = parseFloat(inputs.accounting.value) || 0;
+            const amortissement = parseFloat(inputs.amortissement.value) || 0;
 
-            // Mise à jour labels des curseurs
-            salaryGrossVal.textContent = fmtCurr(salary);
-            revGrossVal.textContent = fmtCurr(revenue);
-            agentHoursVal.textContent = `${hours} h`;
-            agentWageVal.textContent = `${wageNet.toFixed(2)} €/h`;
+            // Mise à jour displays
+            displays.salary.textContent = fmt(salary);
+            displays.revenue.textContent = fmt(revenue);
+            displays.hours.textContent = `${hours} h`;
+            displays.wage.textContent = fmtDec(wage) + '/h';
 
-            // Calculs de base charges salariales (CESU simplifié sans abattement d'état pro)
-            const salaryNetTotal = wageNet * hours;
-            const totalAgentCost = salaryNetTotal * 1.82; 
+            // Salaire net imposable
+            const salaryDeduction = getSalaryDeduction(salary);
+            const netSalary = Math.max(0, salary - salaryDeduction);
+            const irSalaryOnly = calculateIR(netSalary, parts);
 
-            // Base Salaire Seul avec abattement fiscal automatique de 10%
-            let deductionSalary = salary * 0.10;
-            if (deductionSalary > 14161) deductionSalary = 14161; // Plafond standard estimé 2026
-            if (deductionSalary < 495 && salary > 495) deductionSalary = 495;
-            const netSalaryTaxable = Math.max(0, salary - deductionSalary);
+            // Coûts conciergerie (CESU avec charges à 82%)
+            const salaryAgentNet = wage * hours;
+            const salaryAgentGross = salaryAgentNet * 1.82;
+            const psRate = 0.172;
 
-            const irSalaryOnly = calculateIR(netSalaryTaxable, parts);
-
-            // --- CALCULS OPTION A (Micro-BIC 30%) ---
+            // ========== OPTION A ==========
             const isOptionAValid = revenue <= 15000;
-            let pocketA = 0, taxLmnpA = 0, psA = 0, totalTaxAndPsA = 0;
+            let pocketA = 0, irA = 0, psA = 0, baseTaxableA = 0, deductionA = 0;
 
             if (isOptionAValid) {
-                const abattementA = revenue * 0.30;
-                const baseImposableA = Math.max(0, revenue - abattementA);
-                
-                const irWithA = calculateIR(netSalaryTaxable + baseImposableA, parts);
-                taxLmnpA = irWithA - irSalaryOnly; 
-                psA = baseImposableA * 0.172;
-                totalTaxAndPsA = taxLmnpA + psA;
-                pocketA = revenue - totalTaxAndPsA - totalAgentCost;
-
-                document.getElementById('alert-threshold-a').classList.add('hidden');
-                document.getElementById('list-details-a').classList.remove('opacity-20');
-                document.getElementById('container-bar-a').classList.remove('opacity-30');
-                
-                document.getElementById('det-abatt-a').textContent = fmtCurr(abattementA);
-                document.getElementById('det-ir-a').textContent = fmtCurr(taxLmnpA);
-                document.getElementById('det-ps-a').textContent = fmtCurr(psA);
-                document.getElementById('det-cost-a').textContent = fmtCurr(totalAgentCost);
-                document.getElementById('pocket-a-txt').textContent = fmtCurr(pocketA);
-                document.getElementById('tmi-a-indicator').textContent = `TMI active : ${getTMI(netSalaryTaxable + baseImposableA, parts)}`;
+                deductionA = revenue * 0.30;
+                baseTaxableA = Math.max(0, revenue - deductionA);
+                irA = Math.max(0, calculateIR(netSalary + baseTaxableA, parts) - irSalaryOnly);
+                psA = baseTaxableA * psRate;
+                pocketA = Math.max(0, revenue - irA - psA - salaryAgentGross);
             } else {
                 pocketA = -999999;
-                document.getElementById('alert-threshold-a').classList.remove('hidden');
-                document.getElementById('list-details-a').classList.add('opacity-20');
-                document.getElementById('container-bar-a').classList.add('opacity-30');
-                
-                document.getElementById('det-abatt-a').textContent = "Exclu";
-                document.getElementById('det-ir-a').textContent = "N/A";
-                document.getElementById('det-ps-a').textContent = "N/A";
-                document.getElementById('det-cost-a').textContent = "N/A";
-                document.getElementById('pocket-a-txt').textContent = "Inaccessible";
-                document.getElementById('tmi-a-indicator').textContent = "Seuil dépassé";
             }
 
-            // --- CALCULS OPTION B (Régime Réel) ---
-            const totalDeductionsB = totalAgentCost + otherExpenses;
-            const baseImposableB = Math.max(0, revenue - totalDeductionsB);
-            
-            const irWithB = calculateIR(netSalaryTaxable + baseImposableB, parts);
-            const taxLmnpB = irWithB - irSalaryOnly;
-            const psB = baseImposableB * 0.172;
-            const totalTaxAndPsB = taxLmnpB + psB;
-            const totalChargesB = totalDeductionsB + accountingCost;
-            const pocketB = Math.max(0, revenue - totalTaxAndPsB - totalChargesB);
+            // ========== OPTION B ==========
+            const totalDeductionsB = salaryAgentGross + expenses + amortissement;
+            const baseTaxableB = Math.max(0, revenue - totalDeductionsB);
+            const irB = Math.max(0, calculateIR(netSalary + baseTaxableB, parts) - irSalaryOnly);
+            const psB = baseTaxableB * psRate;
+            const pocketB = Math.max(0, revenue - irB - psB - salaryAgentGross - expenses - amortissement - accounting);
 
-            document.getElementById('det-taxbase-b').textContent = fmtCurr(baseImposableB);
-            document.getElementById('det-ir-b').textContent = fmtCurr(taxLmnpB);
-            document.getElementById('det-ps-b').textContent = fmtCurr(psB);
-            document.getElementById('det-cost-b').textContent = fmtCurr(totalChargesB);
-            document.getElementById('pocket-b-txt').textContent = fmtCurr(pocketB);
-            document.getElementById('tmi-b-indicator').textContent = `TMI active : ${getTMI(netSalaryTaxable + baseImposableB, parts)}`;
+            // ========== OPTION C ==========
+            const deductionC = revenue * 0.50;
+            const baseTaxableC = Math.max(0, revenue - deductionC);
+            const irC = Math.max(0, calculateIR(netSalary + baseTaxableC, parts) - irSalaryOnly);
+            const psC = baseTaxableC * psRate;
+            const costC = salaryAgentGross + 40; // 40€ classement annuel
+            const pocketC = Math.max(0, revenue - irC - psC - costC);
 
-            // --- CALCULS OPTION C (Meublé Classé 50%) ---
-            const abattementC = revenue * 0.50;
-            const baseImposableC = Math.max(0, revenue - abattementC);
-            
-            const irWithC = calculateIR(netSalaryTaxable + baseImposableC, parts);
-            const taxLmnpC = irWithC - irSalaryOnly;
-            const psC = baseImposableC * 0.172;
-            const totalTaxAndPsC = taxLmnpC + psC;
-            const costC = totalAgentCost + 40; // 40€ amortissement annuel moyen du coût de classement étoiles
-            const pocketC = Math.max(0, revenue - totalTaxAndPsC - costC);
+            // ========== RENDU GRAPHIQUE ==========
+            const renderBar = (opt, pocket, tax, costs, valid = true) => {
+                const pBar = document.getElementById(`${opt}-pocket-bar`);
+                const tBar = document.getElementById(`${opt}-tax-bar`);
+                const cBar = document.getElementById(`${opt}-cost-bar`);
 
-            document.getElementById('det-abatt-c').textContent = fmtCurr(abattementC);
-            document.getElementById('det-ir-c').textContent = fmtCurr(taxLmnpC);
-            document.getElementById('det-ps-c').textContent = fmtCurr(psC);
-            document.getElementById('det-cost-c').textContent = fmtCurr(costC);
-            document.getElementById('pocket-c-txt').textContent = fmtCurr(pocketC);
-            document.getElementById('tmi-c-indicator').textContent = `TMI active : ${getTMI(netSalaryTaxable + baseImposableC, parts)}`;
-
-            // --- MISE À JOUR RENDU GRAPHIQUE DES RATIOS ---
-            const renderBar = (opt, pVal, tVal, cVal, isValid = true) => {
-                const pBar = document.getElementById(`pocket-${opt}-bar`);
-                const tBar = document.getElementById(`tax-${opt}-bar`);
-                const cBar = document.getElementById(`cost-${opt}-bar`);
-
-                if (!isValid) {
-                    pBar.style.width = "0%"; pBar.textContent = "";
+                if (!valid) {
+                    pBar.style.width = "0%";
                     tBar.style.width = "0%";
                     cBar.style.width = "0%";
                     return;
                 }
 
-                const pPct = Math.max(0, (pVal / revenue) * 100);
-                const tPct = Math.max(0, (tVal / revenue) * 100);
-                const cPct = Math.max(0, (cVal / revenue) * 100);
+                const pPct = Math.max(0, (pocket / revenue) * 100);
+                const tPct = Math.max(0, (tax / revenue) * 100);
+                const cPct = Math.max(0, (costs / revenue) * 100);
 
                 pBar.style.width = `${pPct}%`;
-                pBar.textContent = pPct > 20 ? `${Math.round(pPct)}% net` : "";
+                pBar.textContent = pPct > 15 ? `${Math.round(pPct)}%` : "";
                 tBar.style.width = `${tPct}%`;
                 cBar.style.width = `${cPct}%`;
             };
 
-            renderBar('a', pocketA, totalTaxAndPsA, totalAgentCost, isOptionAValid);
-            renderBar('b', pocketB, totalTaxAndPsB, totalChargesB);
-            renderBar('c', pocketC, totalTaxAndPsC, costC);
+            renderBar('a', pocketA, irA + psA, salaryAgentGross, isOptionAValid);
+            renderBar('b', pocketB, irB + psB, salaryAgentGross + expenses + amortissement + accounting);
+            renderBar('c', pocketC, irC + psC, costC);
 
-            // --- VERDICT DE L'OPTION GAGNANTE ---
-            let winnerTitle = "";
-            let winnerValue = 0;
+            // ========== FICHES DÉTAILS ==========
+            // Option A
+            document.getElementById('a-invalid-alert').classList.toggle('hidden', isOptionAValid);
+            document.getElementById('a-deduct').textContent = fmt(deductionA);
+            document.getElementById('a-base').textContent = fmt(baseTaxableA);
+            document.getElementById('a-ir').textContent = fmt(irA);
+            document.getElementById('a-ps').textContent = fmt(psA);
+            document.getElementById('a-costs').textContent = fmt(salaryAgentGross);
+            document.getElementById('a-pocket-amount').textContent = isOptionAValid ? fmt(pocketA) : 'Inaccessible';
+            document.getElementById('a-tmi').textContent = `TMI : ${getTMI(netSalary + baseTaxableA, parts)}`;
 
-            if (pocketC >= pocketA && pocketC >= pocketB) {
-                winnerTitle = "Option C : Micro-BIC Meublé Classé (Gain net optimal)";
-                winnerValue = pocketC;
-            } else if (pocketA >= pocketB && pocketA >= pocketC && isOptionAValid) {
-                winnerTitle = "Option A : Micro-BIC standard";
-                winnerValue = pocketA;
+            // Option B
+            document.getElementById('b-deduct').textContent = fmt(totalDeductionsB);
+            document.getElementById('b-amort').textContent = fmt(amortissement);
+            document.getElementById('b-base').textContent = fmt(baseTaxableB);
+            document.getElementById('b-ir').textContent = fmt(irB);
+            document.getElementById('b-ps').textContent = fmt(psB);
+            document.getElementById('b-pocket-amount').textContent = fmt(pocketB);
+            document.getElementById('b-tmi').textContent = `TMI : ${getTMI(netSalary + baseTaxableB, parts)}`;
+
+            // Option C
+            document.getElementById('c-deduct').textContent = fmt(deductionC);
+            document.getElementById('c-base').textContent = fmt(baseTaxableC);
+            document.getElementById('c-ir').textContent = fmt(irC);
+            document.getElementById('c-ps').textContent = fmt(psC);
+            document.getElementById('c-costs').textContent = fmt(costC);
+            document.getElementById('c-pocket-amount').textContent = fmt(pocketC);
+            document.getElementById('c-tmi').textContent = `TMI : ${getTMI(netSalary + baseTaxableC, parts)}`;
+
+            // ========== VERDICT GAGNANT ==========
+            let winnerOpt = '', winnerTitle = '', winnerAmount = 0, winnerTMI = '';
+
+            if (isOptionAValid && pocketA >= pocketB && pocketA >= pocketC) {
+                winnerOpt = 'A';
+                winnerTitle = 'Option A : Micro-BIC Standard';
+                winnerAmount = pocketA;
+                winnerTMI = getTMI(netSalary + baseTaxableA, parts);
+            } else if (pocketC >= pocketA && pocketC >= pocketB) {
+                winnerOpt = 'C';
+                winnerTitle = 'Option C : Meublé de Tourisme Classé';
+                winnerAmount = pocketC;
+                winnerTMI = getTMI(netSalary + baseTaxableC, parts);
             } else {
-                winnerTitle = "Option B : Passage au Régime Réel Intégral";
-                winnerValue = pocketB;
+                winnerOpt = 'B';
+                winnerTitle = 'Option B : Régime Réel Intégral';
+                winnerAmount = pocketB;
+                winnerTMI = getTMI(netSalary + baseTaxableB, parts);
             }
 
             document.getElementById('winner-title').textContent = winnerTitle;
-            document.getElementById('winner-pocket').textContent = fmtCurr(winnerValue);
+            document.getElementById('winner-amount').textContent = fmt(winnerAmount);
+            document.getElementById('winner-tmi').textContent = winnerTMI;
         }
 
-        [salaryGrossInput, taxPartsSelect, revGrossInput, agentHoursInput, agentWageInput, otherExpensesInput, accountingCostInput].forEach(input => {
+        // Événements
+        Object.values(inputs).forEach(input => {
             input.addEventListener('input', performCalculations);
             input.addEventListener('change', performCalculations);
         });
 
-        window.onload = performCalculations;
+        window.addEventListener('load', performCalculations);
     </script>
 </body>
 </html>
